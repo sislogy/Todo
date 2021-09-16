@@ -1,0 +1,71 @@
+﻿@code {
+
+    #region Parametros
+    [Parameter] public string Nombre { get; set; }
+    [Parameter] public string Nombre2 { get; set; }
+    [Parameter] public string Apellido { get; set; }
+    [Parameter] public EventCallback<int> EventActualizar { get; set; } = new();
+    #endregion
+
+    #region Propiedades
+
+    public MudTextField<int> _edad { get; set; } = new();
+    #endregion
+
+    #region Eventos
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+    }
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        return base.OnAfterRenderAsync(firstRender);
+    }
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+    protected override Task OnInitializedAsync()
+    {
+        return base.OnInitializedAsync();
+    }
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+    }
+    protected override Task OnParametersSetAsync()
+    {
+        return base.OnParametersSetAsync();
+    }
+    protected override bool ShouldRender()
+    {
+        return base.ShouldRender();
+    }
+    #endregion
+
+    #region Metodos
+    public void Actualizarbto()
+    {
+        EventActualizar.InvokeAsync(_edad.Value);
+    }
+    #endregion
+
+}
+
+<MudGrid>
+    <MudItem>
+        <MudTextField @bind-Value="Nombre" Label="Nombre" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" AdornmentColor="Color.Warning" />
+    </MudItem>
+    <MudItem>
+        <MudTextField @bind-Value="Nombre2" Label="Nombre 2" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" AdornmentColor="Color.Warning" />
+    </MudItem>
+    <MudItem>
+        <MudTextField @bind-Value="Apellido" Label="Apellido" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" AdornmentColor="Color.Warning" />
+    </MudItem>
+    <MudItem>
+        <MudTextField @ref="_edad" Value="0" T="int" Label="Edad" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" AdornmentColor="Color.Warning" />
+    </MudItem>
+    <MudItem>
+        <MudButton OnClick="@Actualizarbto" StartIcon="@Icons.Filled.Update" IconColor="@Color.Success" Variant="Variant.Filled">Actualizar</MudButton>
+    </MudItem>
+</MudGrid>

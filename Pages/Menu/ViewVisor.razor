@@ -1,0 +1,121 @@
+﻿@page "/Visor"
+@page "/Visor/{Nombre}"
+
+@code {
+
+    #region Parametros
+    [Parameter] public string Nombre { get; set; } = String.Empty;
+    #endregion
+
+    #region Propiedades
+    public string Nombre2 { get; set; } = String.Empty;
+    public string Apellido { get; set; } = String.Empty;
+    public string Resultado { get; set; } = String.Empty;
+
+    public CtrlUsuario _ctrlUsuario = new();
+
+    #endregion
+
+    #region Eventos
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+    }
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        return base.OnAfterRenderAsync(firstRender);
+    }
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+    protected override Task OnInitializedAsync()
+    {
+        return base.OnInitializedAsync();
+    }
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+    }
+    protected override Task OnParametersSetAsync()
+    {
+        return base.OnParametersSetAsync();
+    }
+    protected override bool ShouldRender()
+    {
+        return base.ShouldRender();
+    }
+    #endregion
+
+    #region Metodos
+
+    async Task JuntarNombre()
+    {
+        await Task.Factory.StartNew(() =>
+        {
+            Resultado = $"{_ctrlUsuario.Nombre} - {_ctrlUsuario.Nombre2}";
+        });
+    }
+    async Task JuntarNombreTodo()
+    {
+        await Task.Factory.StartNew(() =>
+        {
+            Resultado = $"{_ctrlUsuario.Nombre} - {_ctrlUsuario.Nombre2} - {_ctrlUsuario.Apellido}";
+
+        });
+    }
+    async Task Limpiar()
+    {
+        await Task.Factory.StartNew(() =>
+        {
+            return Resultado = string.Empty;
+        });
+    }
+
+    public void ObtenerEdad(int edad)
+    {
+        Resultado += " - " + edad.ToString();
+    }
+
+    #endregion
+
+}
+
+
+<MudGrid Class="ma-4">
+    <MudItem xs="10">
+
+        <MudPaper Elevation="3">
+
+            <MudGrid Spacing="2" Justify="Justify.Center">
+                <MudItem>
+                    <MudButton OnClick="@JuntarNombre" StartIcon="@Icons.Filled.Add" IconColor="@Color.Warning" Variant="Variant.Filled">Juntar Nombres</MudButton>
+                </MudItem>
+                <MudItem>
+                    <MudButton OnClick="@Limpiar" StartIcon="@Icons.Filled.ClearAll" IconColor="@Color.Error" Variant="Variant.Filled" Color="Color.Primary">Limpiar</MudButton>
+                </MudItem>
+                <MudItem>
+                    <MudButton OnClick="@JuntarNombreTodo" StartIcon="@Icons.Filled.Add" IconColor="@Color.Warning" Variant="Variant.Filled" Color="Color.Secondary">Unir todo</MudButton>
+                </MudItem>
+            </MudGrid>
+
+        </MudPaper>
+
+    </MudItem>
+
+    <MudItem xs="10">
+        <MudPaper Elevation="1" Class="pa-4">
+
+            <MudGrid Justify="Justify.FlexStart">
+                <MudItem xs="3">
+                    <CtrlUsuario @ref="_ctrlUsuario" EventActualizar="@ObtenerEdad"></CtrlUsuario>
+                </MudItem>
+                <MudItem xs="3">
+                    <MudTextField @bind-Value="Resultado" Label="Resultado" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" AdornmentColor="Color.Warning" />
+                </MudItem>
+            </MudGrid>
+
+        </MudPaper>
+    </MudItem>
+
+</MudGrid>

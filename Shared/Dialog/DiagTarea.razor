@@ -1,0 +1,148 @@
+﻿
+@using Data.Services
+@using Data.Models
+
+@inject ServicesCards _servicesCards
+@inject ISnackbar _Alert
+@inject IDialogService _Msg
+
+
+@code {
+
+    #region Parametros
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public string Pepe { get; set; }
+    #endregion
+
+    #region Propiedades
+    public string Nombre { get; set; } = string.Empty;
+    public string Descripcion { get; set; } = string.Empty;
+    public string Color { get; set; } = string.Empty;
+    #endregion
+
+    #region Eventos
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+    }
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        return base.OnAfterRenderAsync(firstRender);
+    }
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+    protected override Task OnInitializedAsync()
+    {
+        return base.OnInitializedAsync();
+    }
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+    }
+    protected override Task OnParametersSetAsync()
+    {
+        return base.OnParametersSetAsync();
+    }
+    protected override bool ShouldRender()
+    {
+        return base.ShouldRender();
+    }
+    #endregion
+
+    #region Metodos
+    async Task Guardar()
+    {
+        try
+        {
+            var result = await _Msg.ShowMessageBox("Atención !!", "Esta seguro que quiere guardar ", "Aceptar", null, "Cancelar", null);
+
+            if (result != null && result.Value)
+
+            {
+                Card card = new()
+                {
+                    Color = Color,
+                    Nombre = Nombre,
+                    IdEstado = (int)Data.Negocio.Estados.Card.Tarea,
+                    Descripcion = Descripcion,
+                    Creado = DateTime.Now,
+                    CreadoPor = "Usuario"
+                };
+
+                var objCard = await _servicesCards.PostCardAsync(card);
+
+                if (objCard != null)
+                {
+                    _Alert.Clear();
+                    _Alert.Add("Se guardo", Severity.Success);
+                    
+                    MudDialog.Close(DialogResult.Ok(objCard));
+                }
+                else
+                {
+                    _Alert.Clear();
+                    _Alert.Add("Oops paso algo !!", Severity.Warning);
+                }
+                await InvokeAsync(StateHasChanged);
+            }
+
+        }
+        catch (Exception ex)
+        {
+            _Alert.Clear();
+            _Alert.Add(ex.Message, Severity.Error);
+        }
+    }
+    void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    void Cancel() => MudDialog.Cancel();
+    async Task Limpiar()
+    {
+        try
+        {
+            var result = await _Msg.ShowMessageBox("Atención", "Esta por limpiar los campos", "Aceptar", null, "Cancelar");
+
+            if (result.Value)
+            {
+                Nombre = string.Empty;
+                Descripcion = string.Empty;
+                Color = string.Empty;
+            }
+
+        }
+        catch (Exception ex)
+        {
+            _Alert.Clear();
+            _Alert.Add(ex.Message, Severity.Error);
+        }
+    }
+    #endregion
+
+}
+
+
+<MudDialog>
+    <DialogContent>
+        <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+            <MudTabPanel Text="Crear">
+                <MudGrid>
+                    <MudItem xs="4">
+                        <MudTextField @bind-Value="Nombre" Label="Nombre" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.PersonAdd" AdornmentColor="MudBlazor.Color.Primary" />
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudTextField @bind-Value="Descripcion" Label="Descripcion" Variant="Variant.Text" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Description" AdornmentColor="MudBlazor.Color.Primary" />
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudColorPicker DisableAlpha="true" ColorPickerView="ColorPickerView.Palette" Label="Color" @bind-Text="Color" Adornment="Adornment.Start" AdornmentColor="MudBlazor.Color.Primary" Style="@($"color: {Color};")" Placeholder="Seleccionar Color" />
+                    </MudItem>
+                </MudGrid>
+            </MudTabPanel>
+        </MudTabs>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@Cancel" StartIcon="@Icons.Filled.Cancel" IconColor="MudBlazor.Color.Default" Variant="Variant.Filled">Cancelar</MudButton>
+        <MudButton OnClick="@(_=> Guardar())" StartIcon="@Icons.Filled.Save" IconColor="MudBlazor.Color.Success" Variant="Variant.Filled">Guardar</MudButton>
+        <MudButton OnClick="@Limpiar" StartIcon="@Icons.Filled.Clear" IconColor="MudBlazor.Color.Error" Variant="Variant.Filled">Limpiar</MudButton>
+    </DialogActions>
+</MudDialog>

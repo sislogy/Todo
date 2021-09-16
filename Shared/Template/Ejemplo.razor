@@ -1,0 +1,56 @@
+﻿@page "/ejemplo"
+
+@using Data.Services
+@inject ServicesCards _servicesCards
+@inject ServicesEstados _servicesEstados
+
+@inject ISnackbar _Alert
+@inject IDialogService _Msg
+
+
+@code {
+
+    #region Parametros
+
+    #endregion
+
+    #region Propiedades
+
+    #endregion
+
+    #region Eventos
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+    }
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        return base.OnAfterRenderAsync(firstRender);
+    }
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+    protected override Task OnInitializedAsync()
+    {
+        return base.OnInitializedAsync();
+    }
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+    }
+    protected override Task OnParametersSetAsync()
+    {
+        return base.OnParametersSetAsync();
+    }
+    protected override bool ShouldRender()
+    {
+        return base.ShouldRender();
+    }
+    #endregion
+
+    #region Metodos
+
+    #endregion
+
+}

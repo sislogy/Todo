@@ -1,0 +1,202 @@
+﻿@page "/"
+
+@using Data.Services
+@using Shared.Dialog
+@using Data.Models
+@using Data.Negocio
+
+@inject ServicesCards _servicesCards
+@inject ISnackbar _Alert
+@inject IDialogService _Msg
+
+@code {
+
+    #region Parametros
+
+    #endregion
+
+    #region Propiedades
+    public List<Card> Cards { get; set; } = new();
+    public List<Card> cTareas { get; set; } = new();
+    public List<Card> cEnProceso { get; set; } = new();
+    public List<Card> cTerminadas { get; set; } = new();
+
+    #endregion
+
+    #region Eventos
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+    }
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        return base.OnAfterRenderAsync(firstRender);
+    }
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+    }
+    protected override Task OnParametersSetAsync()
+    {
+        return base.OnParametersSetAsync();
+    }
+    protected override bool ShouldRender()
+    {
+        return base.ShouldRender();
+    }
+    #endregion
+
+    #region Metodos
+
+    async Task LoadData()
+    {
+        Cards = await _servicesCards.GetCardAsync();
+
+        foreach (var item in Cards)
+        {
+            switch (item.IdEstado)
+            {
+                case (int)Estados.Card.Tarea:
+                    cTareas.Add(item);
+                    break;
+                case (int)Estados.Card.EnProceso:
+                    cEnProceso.Add(item);
+                    break;
+                case (int)Estados.Card.Terminadas:
+                    cTerminadas.Add(item);
+                    break;
+            }
+        }
+    }
+
+    async Task NuevaTarea(MouseEventArgs arg)
+    {
+        DialogOptions options = new DialogOptions() { MaxWidth = MaxWidth.False, FullWidth = false, Position = DialogPosition.Center, CloseButton = false, DisableBackdropClick = true };
+        DialogParameters parameters = new DialogParameters { ["Pepe"] = "Hola" };
+        var dialog = _Msg.Show<DiagTarea>("Nueva Tarea", parameters, options);
+        var resul = await dialog.Result;
+
+        if (!resul.Cancelled)
+        {
+            var card = (Card)resul.Data;
+            cTareas.Add(card);
+        }
+    }
+
+    async Task CambiarEstado(Card card, Estados.Card estado)
+    {
+        card.IdEstado = (int)estado;
+        card.Modificado = DateTime.Now;
+        card.ModificadoPor = "Usuario";
+
+        var result = await _servicesCards.PutCardAsync(card.IdCard, card);
+
+        if (result)
+        {
+            Cards.Clear();
+            cTareas.Clear();
+            cEnProceso.Clear();
+            cTerminadas.Clear();
+            await LoadData();
+        }
+    }
+    
+    async Task CambiarColor(Card card, string color)
+    {
+        card.Color = color;
+        card.Modificado = DateTime.Now;
+        card.ModificadoPor = "Usuario";
+
+        var result = await _servicesCards.PutCardAsync(card.IdCard, card);
+
+        if (result)
+        {
+            Cards.Clear();
+            cTareas.Clear();
+            cEnProceso.Clear();
+            cTerminadas.Clear();
+            await LoadData();
+        }
+    }
+    #endregion
+
+}
+
+<MudGrid Justify="Justify.FlexStart">
+    <MudItem xs="12">
+        <MudButton OnClick="@((e)=> NuevaTarea(e))" StartIcon="@Icons.Material.Filled.Task" IconColor="Color.Info" Variant="Variant.Filled">Nueva</MudButton>
+    </MudItem>
+    <MudItem xs="12" >
+        <MudGrid Justify="Justify.Center" Class="ma-2">
+            <MudItem xs="4">
+                <MudText Typo="Typo.h5">Tareas</MudText>
+                <MudList Clickable="true" Dense="true" Class="ma-2">
+                    @foreach (var item in cTareas)
+                    {
+                        <MudListItem>
+                            <MudCard Elevation="4" Style="@($"background-color:{item.Color}")" Class="my-3">
+                                <MudCardContent>
+                                    <MudText>@item.Nombre</MudText>
+                                    <MudText Typo="Typo.body2">@item.Descripcion</MudText>
+                                </MudCardContent>
+                                <MudCardActions Style="justify-content: right;">
+                                    <MudIconButton OnClick="@(_=> CambiarEstado(item,Estados.Card.EnProceso))" Icon="@Icons.Material.Filled.ArrowRight" Size="Size.Large" Class="ma-2" />
+                                    <MudIconButton OnClick="@(_=> CambiarEstado(item,Estados.Card.Eliminado))" Color="Color.Error" Icon="@Icons.Material.Filled.DeleteForever" Size="Size.Large" Class="ma-2" />
+                                </MudCardActions>
+                            </MudCard>
+                        </MudListItem>
+                    }
+                </MudList>
+            </MudItem>
+            <MudItem xs="4">
+                <MudText Typo="Typo.h5">En Proceso</MudText>
+                <MudList Clickable="true" Dense="true" Class="ma-2">
+                    @foreach (var item in cEnProceso)
+                    {
+                        <MudListItem>
+                            <MudCard Elevation="4" Style="@($"background-color:{item.Color}")" Class="my-3">
+                                <MudCardContent>
+                                    <MudText>@item.Nombre</MudText>
+                                    <MudText Typo="Typo.body2">@item.Descripcion</MudText>
+                                </MudCardContent>
+                                <MudCardActions Style="justify-content: right;">
+                                    <MudIconButton OnClick="@(_=> CambiarEstado(item, Estados.Card.Tarea))" Icon="@Icons.Material.Filled.ArrowLeft" Size="Size.Large" Class="ma-2" />
+                                    <MudIconButton OnClick="@(_=> CambiarEstado(item, Estados.Card.Terminadas))" Icon="@Icons.Material.Filled.ArrowRight" Size="Size.Large" Class="ma-2" />
+                                    <MudIconButton OnClick="@(_=> CambiarEstado(item, Estados.Card.Eliminado))" Color="Color.Error" Icon="@Icons.Material.Filled.DeleteForever" Size="Size.Large" Class="ma-2" />
+                                </MudCardActions>
+                            </MudCard>
+                        </MudListItem>
+                    }
+                </MudList>
+            </MudItem>
+            <MudItem xs="4">
+                <MudText Typo="Typo.h5">Terminada</MudText>
+                <MudList Clickable="true" Dense="true" Class="ma-2">
+                    @foreach (var item in cTerminadas)
+                    {
+                        <MudListItem>
+                            <MudCard Elevation="4" Style="@($"background-color:{item.Color}")" Class="my-3">
+                                <MudCardContent>
+                                    <MudText>@item.Nombre</MudText>
+                                    <MudText Typo="Typo.body2">@item.Descripcion</MudText>
+                                </MudCardContent>
+                                <MudCardActions Style="justify-content: right;">
+                                    <MudIconButton OnClick="@(_=> CambiarEstado(item, Estados.Card.EnProceso))" Icon="@Icons.Material.Filled.ArrowLeft" Size="Size.Large" Class="ma-2" />
+                                    <MudIconButton OnClick="@(_=> CambiarEstado(item, Estados.Card.Eliminado))" Color="Color.Error" Icon="@Icons.Material.Filled.DeleteForever" Size="Size.Large" Class="ma-2" />
+                                </MudCardActions>
+                            </MudCard>
+                        </MudListItem>
+                    }
+                </MudList>
+            </MudItem>
+        </MudGrid>
+    </MudItem>
+</MudGrid>
