@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Todo.Data.Negocio
+﻿namespace Todo.Data.Negocio
 {
     public class Estados
     {
-
         public enum Card
         {
             Tarea = 1,
@@ -15,6 +9,5 @@ namespace Todo.Data.Negocio
             Terminadas = 3,
             Eliminado = 4
         }
-
     }
 }

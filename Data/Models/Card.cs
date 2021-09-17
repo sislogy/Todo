@@ -13,10 +13,11 @@ namespace Todo.Data.Models
         public string Nombre { get; set; }
         public string Descripcion { get; set; }
         public string Color { get; set; }
+        public string AdjuntoNombre { get; set; }
+        public byte[] Adjunto { get; set; }
         public DateTime? Creado { get; set; }
         public string CreadoPor { get; set; }
         public DateTime? Modificado { get; set; }
         public string ModificadoPor { get; set; }
-        public byte[] Adjunto { get; set; }
     }
 }

@@ -1,6 +1,6 @@
-﻿
-@using Data.Services
+﻿@using Data.Services
 @using Data.Models
+@using System.IO
 
 @inject ServicesCards _servicesCards
 @inject ISnackbar _Alert
@@ -18,6 +18,8 @@
     public string Nombre { get; set; } = string.Empty;
     public string Descripcion { get; set; } = string.Empty;
     public string Color { get; set; } = string.Empty;
+    public string AdjuntoNombre { get; set; }
+    public byte[] Adjunto { get; set; }
     #endregion
 
     #region Eventos
@@ -59,7 +61,6 @@
             var result = await _Msg.ShowMessageBox("Atención !!", "Esta seguro que quiere guardar ", "Aceptar", null, "Cancelar", null);
 
             if (result != null && result.Value)
-
             {
                 Card card = new()
                 {
@@ -68,7 +69,9 @@
                     IdEstado = (int)Data.Negocio.Estados.Card.Tarea,
                     Descripcion = Descripcion,
                     Creado = DateTime.Now,
-                    CreadoPor = "Usuario"
+                    CreadoPor = "Usuario",
+                    Adjunto = Adjunto,
+                    AdjuntoNombre = AdjuntoNombre
                 };
 
                 var objCard = await _servicesCards.PostCardAsync(card);
@@ -76,8 +79,8 @@
                 if (objCard != null)
                 {
                     _Alert.Clear();
-                    _Alert.Add("Se guardo", Severity.Success);
-                    
+                    _Alert.Add("Se guardo con Éxito!", Severity.Success);
+
                     MudDialog.Close(DialogResult.Ok(objCard));
                 }
                 else
@@ -87,7 +90,6 @@
                 }
                 await InvokeAsync(StateHasChanged);
             }
-
         }
         catch (Exception ex)
         {
@@ -97,6 +99,7 @@
     }
     void Submit() => MudDialog.Close(DialogResult.Ok(true));
     void Cancel() => MudDialog.Cancel();
+
     async Task Limpiar()
     {
         try
@@ -108,8 +111,9 @@
                 Nombre = string.Empty;
                 Descripcion = string.Empty;
                 Color = string.Empty;
+                AdjuntoNombre = string.Empty;
+                Adjunto = null;
             }
-
         }
         catch (Exception ex)
         {
@@ -117,6 +121,27 @@
             _Alert.Add(ex.Message, Severity.Error);
         }
     }
+
+    async Task CargaArchivo(InputFileChangeEventArgs e)
+    {
+        AdjuntoNombre = (string)e.File.Name.ToString();
+        Adjunto = await GetByteOfFile(e.File);
+        _Alert.Clear();
+        _Alert.Add("Archivo Preparado!", Severity.Success);
+    }
+
+    public static async Task<byte[]> GetByteOfFile(IBrowserFile file)
+    {
+        byte[] bytes = new byte[file.Size];
+
+        var stream = file.OpenReadStream(int.MaxValue);
+
+        await stream.ReadAsync(bytes);
+        await stream.DisposeAsync();
+
+        return bytes;
+    }
+
     #endregion
 
 }
@@ -135,6 +160,14 @@
                     </MudItem>
                     <MudItem xs="4">
                         <MudColorPicker DisableAlpha="true" ColorPickerView="ColorPickerView.Palette" Label="Color" @bind-Text="Color" Adornment="Adornment.Start" AdornmentColor="MudBlazor.Color.Primary" Style="@($"color: {Color};")" Placeholder="Seleccionar Color" />
+                    </MudItem>
+                </MudGrid>
+                <MudGrid>
+                    <MudItem xs="12">
+                        <InputFile id="file" hidden accept=".jpg, .jpeg, .png, .gif, .tiff, .txt, .pdf, .xls .xlsx, .doc, .docx, .ppt, .pptx, .cvs" OnChange="CargaArchivo" />
+                        <MudButton HtmlTag="label" Variant="Variant.Filled" Color="MudBlazor.Color.Primary" StartIcon="@Icons.Filled.CloudUpload" for="file">
+                            Agregue Adjunto!
+                        </MudButton>
                     </MudItem>
                 </MudGrid>
             </MudTabPanel>

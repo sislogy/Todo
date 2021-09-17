@@ -30,6 +30,8 @@ namespace Todo.Data.Context
             {
                 entity.HasKey(e => e.IdCard);
 
+                entity.Property(e => e.AdjuntoNombre).HasMaxLength(255);
+
                 entity.Property(e => e.Color)
                     .HasMaxLength(7)
                     .IsFixedLength(true);

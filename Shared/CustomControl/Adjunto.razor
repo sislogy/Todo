@@ -1,0 +1,25 @@
+﻿@code{
+    [Parameter] public string nombre { get; set; }
+    [Parameter] public byte[] archivo { get; set; }
+}
+
+@if (nombre.Contains(".jpg") ||
+   nombre.Contains(".jpeg") ||
+   nombre.Contains(".png") ||
+   nombre.Contains(".tiff") ||
+   nombre.Contains(".gif")
+   )
+{
+    <MudText Align="Align.Center">
+        <img src="@($"data:image/png;base64,{Convert.ToBase64String(archivo)}")" title="@($"{nombre}")" style="width:50px;height:auto;" />
+    </MudText>
+    <MudText Align="Align.Right">
+        <MudIcon Icon="@Icons.Material.Filled.AttachFile" /><a download="@($"{nombre}")" href="@($"data:application/octet-stream;base64,{Convert.ToBase64String(archivo)}")">@nombre</a>
+    </MudText>
+}
+else
+{
+    <MudText Align="Align.Right">
+        <MudIcon Icon="@Icons.Material.Filled.AttachFile" /><a download="@($"{nombre}")" href="@($"data:application/octet-stream;base64,{Convert.ToBase64String(archivo)}")">@nombre</a>
+    </MudText>
+}

@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 
-#nullable disable
-
 namespace Todo.Data.Models
 {
     public partial class Estado

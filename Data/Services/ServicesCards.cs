@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Todo.Data.Context;
 using Todo.Data.Models;
@@ -21,7 +18,7 @@ namespace Todo.Data.Services
 
         public async Task<List<Card>> GetCardAsync()
         {
-            return await _context.Card.Where(y => y.IdEstado != (int)Data.Negocio.Estados.Card.Eliminado).OrderByDescending(x => x.IdCard).ToListAsync();
+            return await _context.Card.Where(y => y.IdEstado != (int)Data.Negocio.Estados.Card.Eliminado).OrderByDescending(x => x.Modificado).ToListAsync();
         }
         public async Task<Card> GetCardAsync(long id)
         {

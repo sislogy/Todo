@@ -8,6 +8,7 @@
 @inject ServicesCards _servicesCards
 @inject ISnackbar _Alert
 @inject IDialogService _Msg
+@inject ISnackbar Snackbar
 
 @code {
 
@@ -108,7 +109,7 @@
             await LoadData();
         }
     }
-    
+
     async Task CambiarColor(Card card, string color)
     {
         card.Color = color;
@@ -130,67 +131,94 @@
 
 }
 
-<MudGrid Justify="Justify.FlexStart">
+<MudGrid Justify="Justify.Center">
     <MudItem xs="12">
-        <MudButton OnClick="@((e)=> NuevaTarea(e))" StartIcon="@Icons.Material.Filled.Task" IconColor="Color.Info" Variant="Variant.Filled">Nueva</MudButton>
+        <MudButton OnClick="@((e)=> NuevaTarea(e))" StartIcon="@Icons.Material.Filled.Task" IconColor="Color.Info" Variant="Variant.Filled">Crear Tarea</MudButton>
     </MudItem>
-    <MudItem xs="12" >
-        <MudGrid Justify="Justify.Center" Class="ma-2">
-            <MudItem xs="4">
+    <MudItem xs="12">
+        <MudGrid Justify="Justify.SpaceBetween" Class="ma-1">
+            <MudItem xs="12" md="4">
                 <MudText Typo="Typo.h5">Tareas</MudText>
-                <MudList Clickable="true" Dense="true" Class="ma-2">
+                <MudList Clickable="true" Dense="true" Class="ma-1" Style="overflow:scroll;">
                     @foreach (var item in cTareas)
                     {
                         <MudListItem>
-                            <MudCard Elevation="4" Style="@($"background-color:{item.Color}")" Class="my-3">
+                            <MudCard Elevation="4" Style="@($"background: linear-gradient({item.Color} 60%,#e5e5e5)")" Class="my-1">
                                 <MudCardContent>
-                                    <MudText>@item.Nombre</MudText>
+                                    <MudCardHeader>
+                                        <CardHeaderContent>
+                                            <MudText Align="Align.Left" Typo="Typo.h4">@item.Nombre</MudText>
+                                            <MudText Align="Align.Right">@item.Modificado</MudText>
+                                        </CardHeaderContent>
+                                    </MudCardHeader>
                                     <MudText Typo="Typo.body2">@item.Descripcion</MudText>
+                                    @if (item.Adjunto != null)
+                                    {
+                                        <Todo.Shared.CustomControl.Adjunto nombre="@item.AdjuntoNombre" archivo="@item.Adjunto" />
+                                    }
                                 </MudCardContent>
                                 <MudCardActions Style="justify-content: right;">
-                                    <MudIconButton OnClick="@(_=> CambiarEstado(item,Estados.Card.EnProceso))" Icon="@Icons.Material.Filled.ArrowRight" Size="Size.Large" Class="ma-2" />
-                                    <MudIconButton OnClick="@(_=> CambiarEstado(item,Estados.Card.Eliminado))" Color="Color.Error" Icon="@Icons.Material.Filled.DeleteForever" Size="Size.Large" Class="ma-2" />
+                                    <MudIconButton OnClick="@(_=> CambiarEstado(item,Estados.Card.EnProceso))" Icon="@Icons.Material.Filled.ArrowRight" Size="Size.Medium" Class="ml-2 mr-2" />
+                                    <MudIconButton OnClick="@(_=> CambiarEstado(item,Estados.Card.Eliminado))" Color="Color.Error" Icon="@Icons.Material.Filled.DeleteForever" Size="Size.Medium" Class="ml-2 mr-2" />
                                 </MudCardActions>
                             </MudCard>
                         </MudListItem>
                     }
                 </MudList>
             </MudItem>
-            <MudItem xs="4">
+            <MudItem xs="12" md="4">
                 <MudText Typo="Typo.h5">En Proceso</MudText>
-                <MudList Clickable="true" Dense="true" Class="ma-2">
+                <MudList Clickable="true" Dense="true" Class="ma-1">
                     @foreach (var item in cEnProceso)
                     {
                         <MudListItem>
-                            <MudCard Elevation="4" Style="@($"background-color:{item.Color}")" Class="my-3">
+                            <MudCard Elevation="4" Style="@($"background: linear-gradient({item.Color} 60%,#e5e5e5)")" Class="my-1">
                                 <MudCardContent>
-                                    <MudText>@item.Nombre</MudText>
+                                    <MudCardHeader>
+                                        <CardHeaderContent>
+                                            <MudText Align="Align.Left" Typo="Typo.h4">@item.Nombre</MudText>
+                                            <MudText Align="Align.Right">@item.Modificado</MudText>
+                                        </CardHeaderContent>
+                                    </MudCardHeader>
                                     <MudText Typo="Typo.body2">@item.Descripcion</MudText>
+                                    @if (item.Adjunto != null)
+                                    {
+                                        <Todo.Shared.CustomControl.Adjunto nombre="@item.AdjuntoNombre" archivo="@item.Adjunto" />
+                                    }
                                 </MudCardContent>
                                 <MudCardActions Style="justify-content: right;">
-                                    <MudIconButton OnClick="@(_=> CambiarEstado(item, Estados.Card.Tarea))" Icon="@Icons.Material.Filled.ArrowLeft" Size="Size.Large" Class="ma-2" />
-                                    <MudIconButton OnClick="@(_=> CambiarEstado(item, Estados.Card.Terminadas))" Icon="@Icons.Material.Filled.ArrowRight" Size="Size.Large" Class="ma-2" />
-                                    <MudIconButton OnClick="@(_=> CambiarEstado(item, Estados.Card.Eliminado))" Color="Color.Error" Icon="@Icons.Material.Filled.DeleteForever" Size="Size.Large" Class="ma-2" />
+                                    <MudIconButton OnClick="@(_=> CambiarEstado(item, Estados.Card.Tarea))" Icon="@Icons.Material.Filled.ArrowLeft" Size="Size.Medium" Class="ml-1 mr-1" />
+                                    <MudIconButton OnClick="@(_=> CambiarEstado(item, Estados.Card.Terminadas))" Icon="@Icons.Material.Filled.ArrowRight" Size="Size.Medium" Class="ml-1 mr-1" />
+                                    <MudIconButton OnClick="@(_=> CambiarEstado(item, Estados.Card.Eliminado))" Color="Color.Error" Icon="@Icons.Material.Filled.DeleteForever" Size="Size.Medium" Class="ml-1 mr-1" />
                                 </MudCardActions>
                             </MudCard>
                         </MudListItem>
                     }
                 </MudList>
             </MudItem>
-            <MudItem xs="4">
+            <MudItem xs="12" md="4">
                 <MudText Typo="Typo.h5">Terminada</MudText>
-                <MudList Clickable="true" Dense="true" Class="ma-2">
+                <MudList Clickable="true" Dense="true" Class="ma-1">
                     @foreach (var item in cTerminadas)
                     {
                         <MudListItem>
-                            <MudCard Elevation="4" Style="@($"background-color:{item.Color}")" Class="my-3">
+                            <MudCard Elevation="4" Style="@($"background: linear-gradient({item.Color} 60%,#e5e5e5)")" Class="my-1">
                                 <MudCardContent>
-                                    <MudText>@item.Nombre</MudText>
+                                    <MudCardHeader>
+                                        <CardHeaderContent>
+                                            <MudText Align="Align.Left" Typo="Typo.h4">@item.Nombre</MudText>
+                                            <MudText Align="Align.Right">@item.Modificado</MudText>
+                                        </CardHeaderContent>
+                                    </MudCardHeader>
                                     <MudText Typo="Typo.body2">@item.Descripcion</MudText>
+                                    @if (item.Adjunto != null)
+                                    {
+                                        <Todo.Shared.CustomControl.Adjunto nombre="@item.AdjuntoNombre" archivo="@item.Adjunto" />
+                                    }
                                 </MudCardContent>
                                 <MudCardActions Style="justify-content: right;">
-                                    <MudIconButton OnClick="@(_=> CambiarEstado(item, Estados.Card.EnProceso))" Icon="@Icons.Material.Filled.ArrowLeft" Size="Size.Large" Class="ma-2" />
-                                    <MudIconButton OnClick="@(_=> CambiarEstado(item, Estados.Card.Eliminado))" Color="Color.Error" Icon="@Icons.Material.Filled.DeleteForever" Size="Size.Large" Class="ma-2" />
+                                    <MudIconButton OnClick="@(_=> CambiarEstado(item, Estados.Card.EnProceso))" Icon="@Icons.Material.Filled.ArrowLeft" Size="Size.Medium" Class="ml-1 mr-1" />
+                                    <MudIconButton OnClick="@(_=> CambiarEstado(item, Estados.Card.Eliminado))" Color="Color.Error" Icon="@Icons.Material.Filled.DeleteForever" Size="Size.Medium" Class="ml-1 mr-1" />
                                 </MudCardActions>
                             </MudCard>
                         </MudListItem>
